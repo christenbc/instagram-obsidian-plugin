@@ -1,99 +1,113 @@
-import {App, Editor, MarkdownView, Modal, Notice, Plugin} from 'obsidian';
-import {DEFAULT_SETTINGS, MyPluginSettings, SampleSettingTab} from "./settings";
+import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
+import { DEFAULT_SETTINGS, InstagramReelDownloaderSettings, InstagramReelDownloaderSettingTab } from "./settings";
+import { isInstagramReelUrl, downloadReel, cleanInstagramUrl } from "./utils/downloader";
 
-// Remember to rename these classes and interfaces!
-
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class InstagramReelDownloader extends Plugin {
+	settings: InstagramReelDownloaderSettings;
 
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		this.addRibbonIcon('dice', 'Sample', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
-
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status bar text');
-
-		// This adds a simple command that can be triggered anywhere
+		// Add command to download reel at cursor position
 		this.addCommand({
-			id: 'open-modal-simple',
-			name: 'Open modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			}
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'replace-selected',
-			name: 'Replace selected content',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				editor.replaceSelection('Sample editor command');
-			}
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-modal-complex',
-			name: 'Open modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-				return false;
+			id: 'download-reel-at-cursor',
+			name: 'Download instagram reel at cursor',
+			editorCallback: async (editor: Editor, view: MarkdownView) => {
+				await this.downloadReelAtCursor(editor);
 			}
 		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			new Notice("Click");
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
-
+		// Add settings tab
+		this.addSettingTab(new InstagramReelDownloaderSettingTab(this.app, this));
 	}
 
 	onunload() {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<MyPluginSettings>);
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<InstagramReelDownloaderSettings>);
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-}
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
+	/**
+	 * Downloads an Instagram reel at the cursor position and replaces the URL with a markdown video link
+	 */
+	async downloadReelAtCursor(editor: Editor): Promise<void> {
+		try {
+			// Get cursor position first
+			const cursor = editor.getCursor();
+			const line = editor.getLine(cursor.line);
+			const cursorOffset = cursor.ch;
 
-	onOpen() {
-		let {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
+			// Find the full URL (with query parameters) at cursor position
+			// Matches URLs with or without trailing slash before query parameters
+			const instagramUrlPattern = /https?:\/\/(www\.)?instagram\.com\/(reel|p)\/[A-Za-z0-9_-]+\/?(\?[^\s]*)?/g;
+			const matches = Array.from(line.matchAll(instagramUrlPattern));
 
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
+			let originalUrl: string | null = null;
+			let urlStart: number | null = null;
+			let urlEnd: number | null = null;
+
+			for (const match of matches) {
+				if (match.index === undefined) continue;
+				const matchStart = match.index;
+				const matchEnd = matchStart + match[0].length;
+
+				if (cursorOffset >= matchStart && cursorOffset <= matchEnd) {
+					originalUrl = match[0];
+					urlStart = matchStart;
+					urlEnd = matchEnd;
+					break;
+				}
+			}
+
+			if (!originalUrl || urlStart === null || urlEnd === null) {
+				new Notice('No instagram reel URL found at cursor position.');
+				return;
+			}
+
+			// Clean the URL (remove query parameters) for downloading
+			const cleanedUrl = cleanInstagramUrl(originalUrl);
+
+			// Validate it's an Instagram reel URL
+			if (!isInstagramReelUrl(cleanedUrl)) {
+				new Notice('The URL at the cursor is not a valid instagram reel URL.');
+				return;
+			}
+
+			// Show downloading notice
+			new Notice('Downloading reel...');
+
+			// Download the reel using cleaned URL
+			const relativePath = await downloadReel(cleanedUrl, this.settings.downloadFolder, this.app.vault);
+
+			// Extract only the filename (with extension) from relative path
+			// relativePath might be like "Instagram Reels/DS7ltAlkVwU.mp4" or just "DS7ltAlkVwU.mp4"
+			// We only want the filename part, not the folder path
+			const fileName = relativePath.split('/').pop() || relativePath.split('\\').pop() || relativePath;
+
+			// Ensure we have a valid filename with extension
+			if (!fileName || !fileName.includes('.')) {
+				throw new Error('Could not extract valid filename from downloaded file path.');
+			}
+
+			// Replace URL with Obsidian internal link format (only filename, no folder path)
+			const markdownLink = `![[${fileName}]]`;
+
+			editor.replaceRange(
+				markdownLink,
+				{ line: cursor.line, ch: urlStart },
+				{ line: cursor.line, ch: urlEnd }
+			);
+
+			new Notice('Reel downloaded successfully!');
+		} catch (error: unknown) {
+			const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+			new Notice(`Error: ${errorMessage}`);
+			console.error('Error downloading reel:', error);
+		}
 	}
 }

@@ -1,35 +1,39 @@
-import {App, PluginSettingTab, Setting} from "obsidian";
-import MyPlugin from "./main";
+import { App, PluginSettingTab, Setting } from "obsidian";
+import InstagramReelDownloader from "./main";
 
-export interface MyPluginSettings {
-	mySetting: string;
+export interface InstagramReelDownloaderSettings {
+	downloadFolder: string;
 }
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+export const DEFAULT_SETTINGS: InstagramReelDownloaderSettings = {
+	downloadFolder: 'Instagram Reels'
 }
 
-export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+export class InstagramReelDownloaderSettingTab extends PluginSettingTab {
+	plugin: InstagramReelDownloader;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: InstagramReelDownloader) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 
 	display(): void {
-		const {containerEl} = this;
+		const { containerEl } = this;
 
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Settings #1')
-			.setDesc('It\'s a secret')
+			.setName('Download folder')
+			.setDesc('Folder path where instagram reels will be saved (relative to vault root)')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+				.setPlaceholder('Instagram reels')
+				.setValue(this.plugin.settings.downloadFolder)
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					if (value.trim()) {
+						this.plugin.settings.downloadFolder = value.trim();
+					} else {
+						this.plugin.settings.downloadFolder = DEFAULT_SETTINGS.downloadFolder;
+					}
 					await this.plugin.saveSettings();
 				}));
 	}
