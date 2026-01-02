@@ -3,8 +3,8 @@
 	"name": "Instagram Reel Downloader",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Download Instagram reels as videos.",
-	"author": "Obsidian",
+	"description": "Download Instagram reels directly into your Obsidian vault and embed them in your notes.",
+	"author": "Christen Blom-Dahl",
 	"authorUrl": "https://github.com/christenbc",
 	"fundingUrl": "https://buymeacoffee.com/christen.bc",
 	"isDesktopOnly": true
