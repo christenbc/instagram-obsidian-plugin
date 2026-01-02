@@ -1,6 +1,6 @@
 import { Vault } from "obsidian";
 // Node.js built-in module is external in esbuild config and available at runtime
-// eslint-disable-next-line
+// eslint-disable-next-line import/no-nodejs-modules -- Node.js modules are externalized in esbuild config and available at runtime in Obsidian's Electron environment
 import * as path from "path";
 
 /**

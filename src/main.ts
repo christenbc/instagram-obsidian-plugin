@@ -107,7 +107,6 @@ export default class InstagramReelDownloader extends Plugin {
 		} catch (error: unknown) {
 			const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
 			new Notice(`Error: ${errorMessage}`);
-			console.error('Error downloading reel:', error);
 		}
 	}
 }

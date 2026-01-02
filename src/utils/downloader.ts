@@ -1,10 +1,10 @@
 import { Editor } from "obsidian";
 // Node.js built-in modules are external in esbuild config and available at runtime
-// eslint-disable-next-line
+// eslint-disable-next-line import/no-nodejs-modules -- Node.js modules are externalized in esbuild config and available at runtime in Obsidian's Electron environment
 import { exec } from "child_process";
-// eslint-disable-next-line
+// eslint-disable-next-line import/no-nodejs-modules -- Node.js modules are externalized in esbuild config and available at runtime in Obsidian's Electron environment
 import { promisify } from "util";
-// eslint-disable-next-line
+// eslint-disable-next-line import/no-nodejs-modules -- Node.js modules are externalized in esbuild config and available at runtime in Obsidian's Electron environment
 import * as fs from "fs";
 import { ensureFolderExists, getFullPath, getRelativePath, getVaultRoot } from "./fileUtils";
 import { Vault } from "obsidian";
