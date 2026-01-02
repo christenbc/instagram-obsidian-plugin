@@ -1,90 +1,156 @@
-# Obsidian Sample Plugin
+# Instagram Reel Downloader
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+Download Instagram reels directly into your Obsidian vault and embed them in your notes.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/christen.bc)
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+> If you find this plugin useful, please consider supporting my work. Your support helps me continue developing and improving this plugin and future projects.
 
-## First time developing plugins?
+## Features
 
-Quick starting guide for new plugin devs:
+-   **One-click download**: Place your cursor on an Instagram reel URL and download it instantly
+-   **Automatic embedding**: Replaces the URL with an Obsidian video link (`![[filename.mp4]]`)
+-   **Customizable storage**: Configure where downloaded reels are saved in your vault
+-   **Smart URL detection**: Automatically detects Instagram reel URLs at your cursor position
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## Prerequisites
 
-## Releasing new releases
+This plugin requires **yt-dlp** to be installed on your system. The plugin is **desktop-only** and will not work on mobile devices.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+### Installing yt-dlp
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+**macOS:**
 
-## Adding your plugin to the community plugin list
-
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
-
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+```bash
+brew install yt-dlp
 ```
 
-If you have multiple URLs, you can also do:
+**Linux:**
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+```bash
+sudo pip install yt-dlp
 ```
 
-## API Documentation
+**Windows:**
 
-See https://docs.obsidian.md
+```bash
+pip install yt-dlp
+```
+
+After installing yt-dlp, you may need to restart Obsidian for the plugin to detect it.
+
+## Installation
+
+### From Obsidian Community Plugins
+
+1. Open **Settings → Community plugins**
+2. Click **Browse** and search for "Instagram Reel Downloader"
+3. Click **Install**, then **Enable**
+
+### Manual Installation
+
+1. Download the latest release from GitHub
+2. Extract the plugin folder to your vault's `.obsidian/plugins/` directory:
+    ```
+    <Vault>/.obsidian/plugins/instagram-reel-downloader/
+    ```
+3. Place `main.js`, `manifest.json`, and `styles.css` (if present) in the plugin folder
+4. Reload Obsidian
+5. Enable the plugin in **Settings → Community plugins**
+
+## How to Use
+
+1. **Paste an Instagram reel URL** into your note (e.g., `https://www.instagram.com/reel/ABC123xyz/`)
+
+2. **Place your cursor** anywhere on the URL
+
+3. **Run the command**:
+
+    - Open the command palette (`Cmd/Ctrl + P`)
+    - Type "Download instagram reel at cursor"
+    - Press Enter
+
+4. The plugin will:
+    - Download the reel video to your configured folder
+    - Replace the URL with an embedded video link: `![[filename.mp4]]`
+
+The video will now be embedded in your note and playable directly in Obsidian.
+
+## Configuration
+
+Configure the plugin in **Settings → Instagram Reel Downloader**:
+
+-   **Download folder**: Set the folder path (relative to vault root) where reels will be saved. Default is `Instagram Reels`.
+
+## Troubleshooting
+
+### "yt-dlp is not installed or not found in PATH"
+
+-   Make sure yt-dlp is installed (see Prerequisites above)
+-   Verify installation by running `yt-dlp --version` in your terminal
+-   Restart Obsidian after installing yt-dlp
+-   On macOS, ensure Homebrew paths are accessible to Obsidian
+
+### "No instagram reel URL found at cursor position"
+
+-   Make sure your cursor is positioned directly on the Instagram URL
+-   The URL must be a valid Instagram reel or post URL format
+-   Try selecting the entire URL if detection fails
+
+### "This reel is private and cannot be downloaded"
+
+-   Private reels require authentication and cannot be downloaded
+-   Try downloading public reels instead
+
+### "Download timed out"
+
+-   Check your internet connection
+-   The reel might be very large or the connection slow
+-   Try again after a moment
+
+### Video not playing in Obsidian
+
+-   Ensure the file was downloaded successfully (check the download folder)
+-   Verify the markdown link format is correct: `![[filename.mp4]]`
+-   Some video formats may not be supported by Obsidian's built-in player
+
+## Development
+
+### Building from Source
+
+1. Clone this repository
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
+3. Build the plugin:
+    ```bash
+    npm run build
+    ```
+4. For development with watch mode:
+    ```bash
+    npm run dev
+    ```
+
+### Project Structure
+
+```
+src/
+  main.ts              # Plugin entry point and lifecycle
+  settings.ts          # Settings interface and UI
+  utils/
+    downloader.ts      # yt-dlp integration and download logic
+    fileUtils.ts       # File system utilities
+```
+
+## License
+
+See LICENSE file for details.
+
+## Support
+
+If you encounter issues or have feature requests, please open an issue on GitHub.
+
+## Credits
+
+Created by [@christen_bc](https://github.com/christenbc/)
