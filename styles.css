@@ -6,3 +6,27 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.instagram-reel-downloader-suggestion-container {
+	position: fixed;
+	z-index: 10000;
+}
+
+.instagram-reel-downloader-suggestion {
+	max-height: 200px;
+	overflow-y: auto;
+	background-color: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.instagram-reel-downloader-suggestion-item {
+	padding: 4px 8px;
+	cursor: pointer;
+}
+
+.instagram-reel-downloader-suggestion-item:hover,
+.instagram-reel-downloader-suggestion-item.is-selected {
+	background-color: var(--background-modifier-hover);
+}

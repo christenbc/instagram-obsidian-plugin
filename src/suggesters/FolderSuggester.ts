@@ -1,4 +1,4 @@
-import { App, Scope } from "obsidian";
+import { App, Scope, setCssProps } from "obsidian";
 
 export class FolderSuggest {
 	private app: App;
@@ -34,9 +34,11 @@ export class FolderSuggest {
 		const updatePosition = () => {
 			if (!suggestionContainer) return;
 			const inputRect = this.inputEl.getBoundingClientRect();
-			suggestionContainer.style.top = `${inputRect.bottom + window.scrollY + 2}px`;
-			suggestionContainer.style.left = `${inputRect.left + window.scrollX}px`;
-			suggestionContainer.style.width = `${inputRect.width}px`;
+			setCssProps(suggestionContainer, {
+				top: `${inputRect.bottom + window.scrollY + 2}px`,
+				left: `${inputRect.left + window.scrollX}px`,
+				width: `${inputRect.width}px`,
+			});
 		};
 
 		const showSuggestions = (query: string = "") => {
@@ -63,9 +65,9 @@ export class FolderSuggest {
 			}
 			
 			// Create suggestion dropdown positioned absolutely based on input position
-			suggestionContainer = document.body.createDiv({ cls: "suggestion-container" });
-			suggestionContainer.style.position = "fixed";
-			suggestionContainer.style.zIndex = "10000";
+			suggestionContainer = document.body.createDiv({ 
+				cls: "instagram-reel-downloader-suggestion-container" 
+			});
 			updatePosition();
 
 			// Update position on scroll and resize
@@ -73,30 +75,24 @@ export class FolderSuggest {
 			window.addEventListener("scroll", updatePositionHandler, true);
 			window.addEventListener("resize", updatePositionHandler);
 
-			const suggestionList = suggestionContainer.createDiv({ cls: "suggestion" });
-			suggestionList.style.maxHeight = "200px";
-			suggestionList.style.overflowY = "auto";
-			suggestionList.style.backgroundColor = "var(--background-primary)";
-			suggestionList.style.border = "1px solid var(--background-modifier-border)";
-			suggestionList.style.borderRadius = "4px";
-			suggestionList.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+			const suggestionList = suggestionContainer.createDiv({ 
+				cls: "instagram-reel-downloader-suggestion" 
+			});
 
 			selectedIndex = -1;
 
 			filtered.slice(0, 10).forEach((folder, index) => {
 				const item = suggestionList.createDiv({
-					cls: "suggestion-item",
+					cls: "instagram-reel-downloader-suggestion-item",
 					text: folder || "(root)"
 				});
-				item.style.padding = "4px 8px";
-				item.style.cursor = "pointer";
 
 				item.addEventListener("mouseenter", () => {
 					// Remove previous selection
-					suggestionList.querySelectorAll(".suggestion-item").forEach(el => {
-						el.style.backgroundColor = "";
+					suggestionList.querySelectorAll(".instagram-reel-downloader-suggestion-item").forEach(el => {
+						el.classList.remove("is-selected");
 					});
-					item.style.backgroundColor = "var(--background-modifier-hover)";
+					item.classList.add("is-selected");
 					selectedIndex = index;
 				});
 
@@ -164,7 +160,7 @@ export class FolderSuggest {
 		this.inputEl.addEventListener("keydown", (e) => {
 			if (!suggestionContainer) return;
 
-			const items = suggestionContainer.querySelectorAll(".suggestion-item") as NodeListOf<HTMLElement>;
+			const items = suggestionContainer.querySelectorAll(".instagram-reel-downloader-suggestion-item");
 			if (items.length === 0) return;
 
 			if (e.key === "ArrowDown") {
@@ -172,13 +168,21 @@ export class FolderSuggest {
 				selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
 				items[selectedIndex]?.scrollIntoView({ block: "nearest" });
 				items.forEach((el, idx) => {
-					el.style.backgroundColor = idx === selectedIndex ? "var(--background-modifier-hover)" : "";
+					if (idx === selectedIndex) {
+						el.classList.add("is-selected");
+					} else {
+						el.classList.remove("is-selected");
+					}
 				});
 			} else if (e.key === "ArrowUp") {
 				e.preventDefault();
 				selectedIndex = Math.max(selectedIndex - 1, -1);
 				items.forEach((el, idx) => {
-					el.style.backgroundColor = idx === selectedIndex ? "var(--background-modifier-hover)" : "";
+					if (idx === selectedIndex) {
+						el.classList.add("is-selected");
+					} else {
+						el.classList.remove("is-selected");
+					}
 				});
 			} else if (e.key === "Enter" && selectedIndex >= 0) {
 				e.preventDefault();
