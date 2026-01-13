@@ -1,4 +1,4 @@
-import { App, Scope, setCssProps } from "obsidian";
+import { App, Scope } from "obsidian";
 
 export class FolderSuggest {
 	private app: App;
@@ -34,11 +34,9 @@ export class FolderSuggest {
 		const updatePosition = () => {
 			if (!suggestionContainer) return;
 			const inputRect = this.inputEl.getBoundingClientRect();
-			setCssProps(suggestionContainer, {
-				top: `${inputRect.bottom + window.scrollY + 2}px`,
-				left: `${inputRect.left + window.scrollX}px`,
-				width: `${inputRect.width}px`,
-			});
+			suggestionContainer.style.top = `${inputRect.bottom + window.scrollY + 2}px`;
+			suggestionContainer.style.left = `${inputRect.left + window.scrollX}px`;
+			suggestionContainer.style.width = `${inputRect.width}px`;
 		};
 
 		const showSuggestions = (query: string = "") => {
@@ -63,10 +61,10 @@ export class FolderSuggest {
 			if (filtered.length === 0) {
 				return;
 			}
-			
+
 			// Create suggestion dropdown positioned absolutely based on input position
-			suggestionContainer = document.body.createDiv({ 
-				cls: "instagram-reel-downloader-suggestion-container" 
+			suggestionContainer = document.body.createDiv({
+				cls: "instagram-reel-downloader-suggestion-container"
 			});
 			updatePosition();
 
@@ -75,8 +73,8 @@ export class FolderSuggest {
 			window.addEventListener("scroll", updatePositionHandler, true);
 			window.addEventListener("resize", updatePositionHandler);
 
-			const suggestionList = suggestionContainer.createDiv({ 
-				cls: "instagram-reel-downloader-suggestion" 
+			const suggestionList = suggestionContainer.createDiv({
+				cls: "instagram-reel-downloader-suggestion"
 			});
 
 			selectedIndex = -1;
@@ -188,7 +186,7 @@ export class FolderSuggest {
 				e.preventDefault();
 				const selectedItem = items[selectedIndex];
 				if (selectedItem) {
-					const folder = this.suggestions.find(f => 
+					const folder = this.suggestions.find(f =>
 						(f || "(root)") === selectedItem.textContent
 					) || "";
 					this.inputEl.value = folder;
