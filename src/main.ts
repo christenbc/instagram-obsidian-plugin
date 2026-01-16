@@ -44,7 +44,7 @@ export default class InstagramReelDownloader extends Plugin {
 
 			// Find the full URL (with query parameters) at cursor position
 			// Matches URLs with or without trailing slash before query parameters
-			const instagramUrlPattern = /https?:\/\/(www\.)?instagram\.com\/(reel|p)\/[A-Za-z0-9_-]+\/?(\?[^\s]*)?/g;
+			const instagramUrlPattern = /https?:\/\/(www\.)?instagram\.com\/(reels?|p)\/[A-Za-z0-9_-]+\/?(\?[^\s]*)?/g;
 			const matches = Array.from(line.matchAll(instagramUrlPattern));
 
 			let originalUrl: string | null = null;
