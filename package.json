@@ -1,6 +1,6 @@
 {
 	"name": "instagram-reel-downloader",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Download Instagram reels directly into your Obsidian vault and embed them in your notes.",
 	"main": "main.js",
 	"type": "module",
