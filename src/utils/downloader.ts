@@ -32,7 +32,7 @@ export function detectUrlAtCursor(editor: Editor): string | null {
 
     // Regex pattern for Instagram URLs (reel or post) - includes query parameters for detection
     // Matches URLs with or without trailing slash before query parameters
-    const instagramUrlPattern = /https?:\/\/(www\.)?instagram\.com\/(reel|p)\/[A-Za-z0-9_-]+\/?(\?[^\s]*)?/g;
+    const instagramUrlPattern = /https?:\/\/(www\.)?instagram\.com\/(reels?|p)\/[A-Za-z0-9_-]+\/?(\?[^\s]*)?/g;
 
     // Find all Instagram URLs in the line
     const matches = Array.from(line.matchAll(instagramUrlPattern));
@@ -57,7 +57,7 @@ export function detectUrlAtCursor(editor: Editor): string | null {
  * Validates if a URL is an Instagram reel URL
  */
 export function isInstagramReelUrl(url: string): boolean {
-    const instagramReelPattern = /https?:\/\/(www\.)?instagram\.com\/(reel|p)\/[A-Za-z0-9_-]+/;
+    const instagramReelPattern = /https?:\/\/(www\.)?instagram\.com\/(reels?|p)\/[A-Za-z0-9_-]+/;
     return instagramReelPattern.test(url);
 }
 
@@ -66,7 +66,7 @@ export function isInstagramReelUrl(url: string): boolean {
  */
 export function sanitizeFilename(url: string): string {
     // Extract the reel/post ID from the URL
-    const match = url.match(/\/(reel|p)\/([A-Za-z0-9_-]+)/);
+    const match = url.match(/\/(reels?|p)\/([A-Za-z0-9_-]+)/);
     if (match && match[2]) {
         return `${match[2]}.mp4`;
     }

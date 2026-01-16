@@ -1,7 +1,7 @@
 {
 	"id": "instagram-reel-downloader",
 	"name": "Instagram Reel Downloader",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "0.15.0",
 	"description": "Download Instagram reels directly into your vault and embed them in your notes.",
 	"author": "Christen Blom-Dahl",
